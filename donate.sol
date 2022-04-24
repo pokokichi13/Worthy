@@ -8,7 +8,7 @@ contract DonateContract {
         uint totalDonation;
         string url;
     }
-    DonationProject [] prjs;
+    DonationProject [] public prjs;
 
     // To find out which prj a user donated to by how much
     // There are many users who can donate to many prjs
@@ -58,5 +58,18 @@ contract DonateContract {
     function registerPrj(address _prjOwner, string memory _url) public {
         DonationProject memory newPrj = DonationProject(_prjOwner, 0, _url);
         prjs.push(newPrj);
+    }
+
+    function getMyPrj() view external returns (uint256 [] memory _ids, uint256 [] memory _total) {
+        uint userDonatedSize = user2Prj[msg.sender].length;
+        //uint [userDonatedSize] memory _prjID;
+        uint[] memory _prjID = new uint[](userDonatedSize);
+        uint[] memory _totalAmount = new uint[](userDonatedSize);
+        for(uint i=0; i<userDonatedSize; i++){
+            _prjID[i] = user2Prj[msg.sender][i].prjid;
+            _totalAmount[i] = user2Prj[msg.sender][i].donatedAmount;
+        }
+        
+        return (_prjID, _totalAmount);
     }
 }
