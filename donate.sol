@@ -30,7 +30,7 @@ contract DonateContract {
 
         // Add to total Donation
         // TBD correct calculation
-        prjs[_id].totalDonation += msg.value/10^15;
+        prjs[_id].totalDonation += msg.value/10^14;
 
         // Add to User's donation amount against the ID
         // TBD correct calculation
@@ -41,12 +41,12 @@ contract DonateContract {
             uint id = user2Prj[msg.sender][i].prjid;
             if(id == _id)
             {
-                user2Prj[msg.sender][i].donatedAmount += msg.value/10^15;
+                user2Prj[msg.sender][i].donatedAmount += msg.value/10e14;
                 found = true;
             }
         }
         if(!found){
-            Donated memory newDonated = Donated(_id, msg.value/10^15);
+            Donated memory newDonated = Donated(_id, msg.value/10e14);
             user2Prj[msg.sender].push(newDonated);
         }
     }
@@ -62,7 +62,6 @@ contract DonateContract {
 
     function getMyPrj() view external returns (uint256 [] memory _ids, uint256 [] memory _total) {
         uint userDonatedSize = user2Prj[msg.sender].length;
-        //uint [userDonatedSize] memory _prjID;
         uint[] memory _prjID = new uint[](userDonatedSize);
         uint[] memory _totalAmount = new uint[](userDonatedSize);
         for(uint i=0; i<userDonatedSize; i++){
