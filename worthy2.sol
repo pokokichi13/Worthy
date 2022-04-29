@@ -67,7 +67,7 @@ contract Donor {
         require(success, "Failed to send money");
 
         // Add to total Donation by calling Treasury contract
-        Treasury(payable(_treasureAddress)).updateDonation(address(this), _id, msg.value/10^13);
+        Treasury(payable(_treasureAddress)).updateDonation(address(this), _id, msg.value/10e13);
 
         // Add to User's donation amount against the ID
         bool found = false;
