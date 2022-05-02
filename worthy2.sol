@@ -21,6 +21,12 @@ contract Treasury is Ownable {
         _;
     }
 
+    // Check donated balance and prevent from sending too much
+    modifier CheckDonatedAmmount(uint _id, uint _value) {
+        require(prjs[_id].totalDonation < _value, "Withdrawal amount exceede donated amount");
+        _;
+    }
+
     // Add Donor and Project contract so that they can set values later on
     mapping(address=>bool) AllowedAddress;
     function addAllowedAddress(address _addr) public onlyOwner {
@@ -48,6 +54,12 @@ contract Treasury is Ownable {
 
     function totalBal() view external returns(uint){
         return address(this).balance;
+    }
+
+    // Withdraw from this contract to prj
+    function sendToPrj(uint _id) external payable onlyOwner CheckDonatedAmmount(_id, msg.value/10e13) {
+        (bool success,) = prjs[_id].prjAddress.call{value: msg.value}('');
+        require(success, "Failed to send ether to prj address");
     }
 }
 
