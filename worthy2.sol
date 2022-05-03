@@ -10,7 +10,7 @@ contract Treasury is Ownable {
 
     // Project struct
     struct DonationProject{
-        address prjAddress;
+        uint prjNumber;
         uint totalDonation;
     }
     DonationProject [] public prjs;
@@ -45,8 +45,8 @@ contract Treasury is Ownable {
     }
 
     // Project calls this to register itself
-    function registerPrj(address _prjOwner , address _addr) CheckAllowed(_addr) public returns(uint){
-        DonationProject memory newPrj = DonationProject(_prjOwner, 0);
+    function registerPrj(uint _prjNumber , address _addr) CheckAllowed(_addr) public returns(uint){
+        DonationProject memory newPrj = DonationProject(_prjNumber, 0);
         prjs.push(newPrj);
         emit PrjRegistered(prjs.length-1);
         return prjs.length-1;
@@ -56,11 +56,20 @@ contract Treasury is Ownable {
         return address(this).balance;
     }
 
+    /*
+    // Approv eproject after review 
+    // After approval they can register 
+    function approvePrj(address _prjAddress) external onlyOwner {
+    }
+    */
+
     // Withdraw from this contract to prj
+    /*
     function sendToPrj(uint _id) external payable onlyOwner CheckDonatedAmmount(_id, msg.value/10e13) {
         (bool success,) = prjs[_id].prjAddress.call{value: msg.value}('');
         require(success, "Failed to send ether to prj address");
     }
+    */
 }
 
 contract Donor {
@@ -126,7 +135,7 @@ contract Project {
         uint treasuryId;
         // TBD add more elements
     }
-    Prj [] public prjs;
+    Prj [] public allPrjs;
 
     // Modifier that checks if project has been approved
     /*
@@ -138,16 +147,16 @@ contract Project {
     function createPrj(string memory _url, address _owner) external {
         // There is no null so setting 999
         Prj memory newPrj = Prj(_url, _owner, false, 999);
-        prjs.push(newPrj);
-        emit PrjCreated(prjs.length-1);
+        allPrjs.push(newPrj);
+        emit PrjCreated(allPrjs.length-1);
     }
 
     function register(address _treasureAddress, uint _prjNumber) external {
-        uint _treasuryID = Treasury(payable(_treasureAddress)).registerPrj(prjs[_prjNumber].owner , address(this));
-        prjs[_prjNumber].treasuryId = _treasuryID;
+        uint _treasuryID = Treasury(payable(_treasureAddress)).registerPrj(_prjNumber , address(this));
+        allPrjs[_prjNumber].treasuryId = _treasuryID;
     }
 
     function getTotalDonation(address _treasureAddress, uint _prjNumber) external view returns (uint) {
-        return Treasury(payable(_treasureAddress)).getTotalDonations(prjs[_prjNumber].treasuryId);
+        return Treasury(payable(_treasureAddress)).getTotalDonations(allPrjs[_prjNumber].treasuryId);
     }
 }
