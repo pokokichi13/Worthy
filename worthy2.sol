@@ -56,6 +56,13 @@ contract Treasury is Ownable {
         return address(this).balance;
     }
 
+    function getPrjDetails(uint _id) external view returns (uint, uint){
+        return (
+            prjs[_id].prjNumber,
+            prjs[_id].totalDonation
+        );
+    }
+
     /*
     // Approv eproject after review 
     // After approval they can register 
@@ -158,5 +165,14 @@ contract Project {
 
     function getTotalDonation(address _treasureAddress, uint _prjNumber) external view returns (uint) {
         return Treasury(payable(_treasureAddress)).getTotalDonations(allPrjs[_prjNumber].treasuryId);
+    }
+
+    function getPrjDetails(uint _prjNumber) external view returns (string memory, address, bool, uint) {
+        return (
+            allPrjs[_prjNumber].url,
+            allPrjs[_prjNumber].owner,
+            allPrjs[_prjNumber].approved,
+            allPrjs[_prjNumber].treasuryId
+        );
     }
 }
